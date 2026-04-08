@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Camila VHS</title>
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
+  <div class="screen-glow"></div>
+  <div class="scanlines"></div>
 
-<div class="tv-frame">
-
-  <!-- LOGIN -->
-  <section id="login" class="view active">
-    <div class="login-box">
-      <h2>Acceso</h2>
-      <input id="user" placeholder="Nombre">
-      <input id="pass" placeholder="Clave" maxlength="5">
+  <main class="screen">
+    <!-- LOGIN -->
+    <section id="login" class="panel active">
+      <h1>ACCESS TERMINAL</h1>
+      <input id="user" placeholder="Nombre" />
+      <input id="pass" placeholder="Clave" maxlength="5" />
       <button id="loginBtn">Entrar</button>
       <p id="status"></p>
-    </div>
-  </section>
+    </section>
 
-  <!-- CHAT -->
-  <section id="chat" class="view hidden">
-    <div class="chat-box">
-      <div class="msg">Mensajes</div>
-      <div class="msg highlight" id="openMessage">🎂 Camila</div>
-    </div>
-  </section>
+    <!-- CHAT -->
+    <section id="chat" class="panel hidden">
+      <div class="chat-header">Mensajes</div>
+      <div class="chat-item" id="openMessage">🎂 Camila</div>
+    </section>
 
-  <!-- CARTA -->
-  <section id="letter" class="view hidden">
-    <div class="terminal">
-      <div id="text"></div>
+    <!-- CARTA -->
+    <section id="letter" class="panel hidden">
+      <div id="text" class="letter-box"></div>
 
       <div class="controls">
         <button id="pause">Pausar</button>
@@ -39,11 +36,9 @@
         <button id="rewind">Rebobinar</button>
         <button id="exit">Salir</button>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-</div>
-
-<script src="scripts/app.js"></script>
+  <script src="scripts/app.js"></script>
 </body>
 </html>
