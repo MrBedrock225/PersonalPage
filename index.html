@@ -9,18 +9,28 @@
     body {
       margin: 0;
       overflow: hidden;
-      background: #020403;
+      background: #000;
       color: #7CFFB2;
       font-family: "Courier New", monospace;
       height: 100vh;
     }
 
-    #noise, #fx {
+    canvas { position: fixed; inset: 0; pointer-events: none; }
+
+    .tv-intro {
       position: fixed;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
+      background: #000;
+      z-index: 20;
+      animation: tvBoot 2.4s ease forwards;
+      transform-origin: center;
+    }
+
+    @keyframes tvBoot {
+      0% { opacity: 1; transform: scaleY(0.005) scaleX(0); filter: brightness(4); }
+      35% { transform: scaleY(0.01) scaleX(1); }
+      70% { transform: scaleY(1) scaleX(1); }
+      100% { opacity: 0; visibility: hidden; }
     }
 
     .screen {
@@ -39,54 +49,51 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255,255,255,0.04) 0px,
-        rgba(255,255,255,0.04) 1px,
-        transparent 2px,
-        transparent 4px
-      );
-      mix-blend-mode: screen;
+      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0 1px, transparent 2px 4px);
       opacity: 0.35;
       animation: scan 8s linear infinite;
     }
 
-    .screen::after {
-      content: "PLAY ▶  SP   00:00:19";
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      font-size: 14px;
-      opacity: 0.7;
-      text-shadow: 0 0 6px #7CFFB2;
-      animation: flicker 0.12s infinite alternate;
-    }
-
     .terminal {
-      position: relative;
-      width: min(900px, 88vw);
-      min-height: 520px;
+      width: min(920px, 88vw);
+      height: 540px;
       padding: 28px;
       border: 1px solid rgba(124,255,178,0.3);
       background: rgba(0, 15, 5, 0.72);
-      box-shadow:
-        0 0 20px rgba(124,255,178,0.12),
-        inset 0 0 40px rgba(124,255,178,0.04);
-      backdrop-filter: blur(1px);
+      box-shadow: 0 0 20px rgba(124,255,178,0.12), inset 0 0 40px rgba(124,255,178,0.04);
       border-radius: 8px;
-      transform: perspective(1200px) rotateX(2deg);
+      position: relative;
+      overflow: hidden;
     }
 
-    .header {
-      margin-bottom: 18px;
-      opacity: 0.8;
+    .header { margin-bottom: 18px; opacity: 0.8; }
+
+    .viewport {
+      position: relative;
+      height: 430px;
+      overflow: hidden;
     }
 
-    .line {
+    .message {
+      position: absolute;
+      inset: 0;
       white-space: pre-wrap;
       line-height: 1.8;
       font-size: clamp(16px, 2vw, 22px);
       text-shadow: 0 0 8px rgba(124,255,178,0.35);
+      opacity: 0;
+      transform: translateY(40px);
+      transition: transform 0.8s ease, opacity 0.8s ease;
+    }
+
+    .message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .message.hide {
+      opacity: 0;
+      transform: translateY(-40px);
     }
 
     .cursor {
@@ -94,70 +101,81 @@
       width: 10px;
       height: 1.1em;
       background: #7CFFB2;
-      vertical-align: middle;
       animation: blink 1s steps(1) infinite;
       box-shadow: 0 0 8px #7CFFB2;
     }
 
-    .glitch {
-      animation: glitch 3s infinite;
-      display: inline-block;
-    }
-
     @keyframes blink { 50% { opacity: 0; } }
-    @keyframes scan {
-      from { transform: translateY(-10px); }
-      to { transform: translateY(10px); }
-    }
-    @keyframes flicker {
-      from { opacity: 0.55; }
-      to { opacity: 0.85; }
-    }
-    @keyframes glitch {
-      0%, 100% { transform: translate(0); }
-      20% { transform: translate(-1px, 1px); }
-      40% { transform: translate(1px, -1px); }
-      60% { transform: translate(-0.5px, 0); }
-      80% { transform: translate(0.5px, 1px); }
-    }
+    @keyframes scan { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
   </style>
 </head>
 <body>
+  <div class="tv-intro"></div>
   <canvas id="noise"></canvas>
   <canvas id="fx"></canvas>
 
   <div class="screen">
     <div class="terminal">
-      <div class="header">[ birthday_message.exe ] iniciado...</div>
-      <div id="text" class="line"></div><span class="cursor"></span>
+      <div class="header">[ birthday_memories_vhs.exe ] reproduciendo...</div>
+      <div class="viewport">
+        <div id="msg" class="message"></div>
+      </div>
     </div>
   </div>
 
+  <audio id="staticAudio" autoplay>
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f5c9f8c8.mp3?filename=tv-static-109624.mp3" type="audio/mpeg">
+  </audio>
+
   <script>
-    const message = `Hola, feliz cumpleaños.\n\nNo quería darte una carta normal, porque eso sería demasiado... humano y predecible.\nAsí que te hice esto: una pantalla perdida entre cintas VHS, ruido, terminales viejas y un montón de líneas verdes como si el tiempo se hubiera quedado pensando en ti.\n\nGracias por existir en esta línea temporal tan mal optimizada.\nCada momento contigo se siente como una escena que vale la pena rebobinar.\n\nEspero que hoy te rías muchísimo, que te sientas querida y que este nuevo año te traiga cosas tan bonitas como tu forma de estar en la vida.\n\nCon cariño,\nNeo <3`;
+    const pages = [
+`Hola... feliz cumpleaños.\n\nNo quería darte una carta normal.` ,
+`Quería que se sintiera como encontrar una cinta perdida.\nUna memoria vieja que aún sigue viva.` ,
+`Gracias por existir en esta línea temporal tan rota y aun así hacerla más bonita.` ,
+`Cada recuerdo contigo merece rebobinarse una y otra vez.\n\nCon cariño,\nNeo <3`
+    ];
 
-    const textEl = document.getElementById('text');
-    let i = 0;
+    const msg = document.getElementById('msg');
+    let pageIndex = 0;
 
-    function type() {
-      if (i < message.length) {
-        const char = message[i] === '\n' ? '<br>' : message[i];
-        textEl.innerHTML += char;
-        i++;
-        setTimeout(type, 35 + Math.random() * 45);
+    function typeText(text, cb) {
+      msg.innerHTML = '';
+      msg.className = 'message show';
+      let i = 0;
+      function step() {
+        if (i < text.length) {
+          msg.innerHTML += text[i] === '\n' ? '<br>' : text[i];
+          i++;
+          setTimeout(step, 25 + Math.random() * 35);
+        } else if (cb) {
+          setTimeout(cb, 2200);
+        }
       }
+      step();
     }
-    type();
 
-    // Procedural VHS noise
+    function nextPage() {
+      typeText(pages[pageIndex], () => {
+        msg.classList.remove('show');
+        msg.classList.add('hide');
+        setTimeout(() => {
+          pageIndex = (pageIndex + 1) % pages.length;
+          msg.classList.remove('hide');
+          typeText(pages[pageIndex], nextPage);
+        }, 900);
+      });
+    }
+
+    setTimeout(nextPage, 2200);
+
     const noise = document.getElementById('noise');
+    const fx = document.getElementById('fx');
     const nctx = noise.getContext('2d');
+    const fctx = fx.getContext('2d');
 
     function resize() {
-      noise.width = innerWidth;
-      noise.height = innerHeight;
-      fx.width = innerWidth;
-      fx.height = innerHeight;
+      noise.width = fx.width = innerWidth;
+      noise.height = fx.height = innerHeight;
     }
     addEventListener('resize', resize);
     resize();
@@ -167,31 +185,25 @@
       const buffer = new Uint32Array(img.data.buffer);
       for (let i = 0; i < buffer.length; i++) {
         const shade = Math.random() * 40;
-        buffer[i] = (20 << 24) | (shade << 16) | (shade << 8) | shade;
+        buffer[i] = (18 << 24) | (shade << 16) | (shade << 8) | shade;
       }
       nctx.putImageData(img, 0, 0);
       requestAnimationFrame(renderNoise);
     }
     renderNoise();
 
-    // Floating procedural particles / signal dust
-    const fx = document.getElementById('fx');
-    const fctx = fx.getContext('2d');
-    const particles = Array.from({ length: 80 }, () => ({
+    const particles = Array.from({ length: 100 }, () => ({
       x: Math.random() * innerWidth,
       y: Math.random() * innerHeight,
       r: Math.random() * 1.8,
-      s: Math.random() * 0.6 + 0.2,
+      s: Math.random() * 0.8 + 0.2,
     }));
 
     function animateFX() {
       fctx.clearRect(0, 0, fx.width, fx.height);
       for (const p of particles) {
         p.y -= p.s;
-        if (p.y < -5) {
-          p.y = innerHeight + 5;
-          p.x = Math.random() * innerWidth;
-        }
+        if (p.y < -5) { p.y = innerHeight + 5; p.x = Math.random() * innerWidth; }
         fctx.beginPath();
         fctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         fctx.fillStyle = 'rgba(124,255,178,0.25)';
