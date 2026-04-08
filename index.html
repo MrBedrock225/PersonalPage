@@ -13,6 +13,7 @@
       font-family: "Courier New", monospace;
       overflow: hidden;
     }
+
     .screen {
       width: 100vw;
       height: 100vh;
@@ -21,51 +22,66 @@
       align-items: center;
       background: radial-gradient(circle, rgba(0,255,120,0.08), #000 70%);
     }
+
     .panel {
-      width: min(800px, 90vw);
-      min-height: 500px;
-      background: rgba(0,20,0,0.8);
+      width: min(900px, 92vw);
+      min-height: 560px;
+      background: rgba(0,20,0,0.82);
       border: 1px solid rgba(124,255,178,0.35);
       padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 30px rgba(124,255,178,0.15);
+      border-radius: 18px;
+      box-shadow: 0 0 40px rgba(124,255,178,0.15), inset 0 0 30px rgba(124,255,178,0.05);
       position: relative;
+      backdrop-filter: blur(2px);
     }
+
     .hidden { display: none; }
+
     button, input {
-      transition: all 0.25s ease;
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
       background: #001a08;
       color: #7CFFB2;
-      border: 1px solid #7CFFB2;
-      padding: 12px;
+      border: 1px solid rgba(124,255,178,0.5);
+      border-radius: 10px;
       font-family: inherit;
-      margin-top: 10px;
-      width: 100%;
+      transition: all 0.25s ease;
     }
+
     button:hover {
       cursor: pointer;
-      filter: brightness(1.2);
-      box-shadow: 0 0 18px rgba(124,255,178,0.35);
       transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 0 18px rgba(124,255,178,0.35);
+      filter: brightness(1.15);
     }
+
     button:active {
-      transform: translateY(0) scale(0.99);
+      transform: scale(0.99);
     }
+
     .type {
       white-space: pre-wrap;
       line-height: 1.8;
-      min-height: 260px;
+      min-height: 320px;
       font-size: 20px;
+      animation: fadeUp 0.6s ease;
     }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .tvboot {
-      animation: tvOverlayOff 1.9s ease forwards;
       position: fixed;
       inset: 0;
       background: #000;
       z-index: 9999;
-      overflow: hidden;
       pointer-events: none;
+      animation: tvOverlayOff 1.9s ease forwards;
     }
+
     .tvboot::before {
       content: '';
       position: absolute;
@@ -78,6 +94,7 @@
       transform: translateY(-50%) scaleX(0);
       animation: crtLine 1.2s ease forwards;
     }
+
     .tvboot::after {
       content: '';
       position: absolute;
@@ -86,115 +103,103 @@
       opacity: 0;
       animation: crtFlash 1.8s ease forwards;
     }
+
     @keyframes crtLine {
       0% { transform: translateY(-50%) scaleX(0); }
       40% { transform: translateY(-50%) scaleX(1); }
       100% { transform: translateY(-50%) scaleX(1); opacity: 0; }
     }
+
     @keyframes crtFlash {
       0% { opacity: 0; }
       35% { opacity: 0.95; }
       65% { opacity: 0.25; }
       100% { opacity: 0; }
     }
+
     @keyframes tvOverlayOff {
       0%, 85% { opacity: 1; visibility: visible; }
-      100% { opacity: 0; visibility: hidden; }
-    }
-      35% { opacity: 0.95; }
-      65% { opacity: 0.25; }
-      100% { opacity: 0; visibility: hidden; }
-    }
-      40% { transform: scaleY(0.01) scaleX(1); opacity: 1; }
-      70% { transform: scaleY(1) scaleX(1); opacity: 1; }
       100% { opacity: 0; visibility: hidden; }
     }
   </style>
 </head>
 <body>
   <div class="tvboot"></div>
+
   <div class="screen">
     <div class="panel">
-      <div id="menu">
+      <section id="menu">
         <h1>SYSTEM MENU</h1>
+        <p>Selecciona un perfil para acceder a la experiencia.</p>
         <button id="camilaBtn">Camila</button>
-      </div>
+      </section>
 
-      <div id="login" class="hidden">
+      <section id="login" class="hidden">
         <h2>LOGIN REQUIRED</h2>
-        <input id="username" placeholder="nombre" />
-        <input id="password" placeholder="clave" maxlength="5" />
+        <input id="username" placeholder="Nombre" />
+        <input id="password" placeholder="Clave" maxlength="5" />
         <button id="loginBtn">Ingresar</button>
         <p id="status"></p>
-      </div>
+      </section>
 
-      <div id="letter" class="hidden">
+      <section id="letter" class="hidden">
         <div id="text" class="type"></div>
-      </div>
+      </section>
     </div>
   </div>
-
-  <audio autoplay>
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f5c9f8c8.mp3?filename=tv-static-109624.mp3" type="audio/mpeg">
-  </audio>
 
   <script>
     const VALID_USER = 'Camila';
     const VALID_PASSWORDS = ['73194','48216','90527','16483','52891'];
 
-    const menu = document.getElementById('menu');
-    const login = document.getElementById('login');
-    const letter = document.getElementById('letter');
-    const status = document.getElementById('status');
-    const text = document.getElementById('text');
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const camilaBtn = document.getElementById('camilaBtn');
-      const loginBtn = document.getElementById('loginBtn');
-
-      camilaBtn.addEventListener('click', () => {
-      menu.classList.add('hidden');
-      login.classList.remove('hidden');
-    };
-
-    function tryLogin() {
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value.trim();
-
-      if (user !== VALID_USER || !VALID_PASSWORDS.includes(pass)) {
-        status.textContent = 'Credenciales inválidas';
-        return;
-      }
-
-      login.classList.add('hidden');
-      letter.classList.remove('hidden');
-      playLetter();
-    }
-
-          });
-      loginBtn.addEventListener('click', tryLogin);
-    });
-
     const pages = [
-      'Hola Camila...
-
-Feliz cumpleaños. Esto no es una carta normal.',
+      'Hola Camila...\n\nFeliz cumpleaños. Esto no es una carta normal.',
       'Es una cinta perdida entre recuerdos, ruido y tiempo.',
       'Cada memoria contigo merece rebobinarse una vez más.',
-      'Con cariño,
-Neo <3'
+      'Con cariño,\nNeo <3'
     ];
 
     let page = 0;
-    function typePage(content, cb) {
-      text.innerHTML = '';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const menu = document.getElementById('menu');
+      const login = document.getElementById('login');
+      const letter = document.getElementById('letter');
+      const status = document.getElementById('status');
+      const text = document.getElementById('text');
+      const camilaBtn = document.getElementById('camilaBtn');
+      const loginBtn = document.getElementById('loginBtn');
+      const username = document.getElementById('username');
+      const password = document.getElementById('password');
+
+      camilaBtn.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        login.classList.remove('hidden');
+      });
+
+      loginBtn.addEventListener('click', () => {
+        const user = username.value.trim();
+        const pass = password.value.trim();
+
+        if (user !== VALID_USER || !VALID_PASSWORDS.includes(pass)) {
+          status.textContent = 'Credenciales inválidas';
+          return;
+        }
+
+        login.classList.add('hidden');
+        letter.classList.remove('hidden');
+        playLetter(text);
+      });
+    });
+
+    function typePage(el, content, cb) {
+      el.innerHTML = '';
       let i = 0;
       function step() {
         if (i < content.length) {
-          text.innerHTML += content[i] === '
-' ? '<br>' : content[i];
+          el.innerHTML += content[i] === '\n' ? '<br>' : content[i];
           i++;
-          setTimeout(step, 30 + Math.random() * 20);
+          setTimeout(step, 28 + Math.random() * 22);
         } else if (cb) {
           setTimeout(cb, 2200);
         }
@@ -202,10 +207,13 @@ Neo <3'
       step();
     }
 
-    function playLetter() {
-      typePage(pages[page], () => {
+    function playLetter(el) {
+      typePage(el, pages[page], () => {
         page = (page + 1) % pages.length;
-        playLetter();
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = 'fadeUp 0.6s ease';
+        playLetter(el);
       });
     }
   </script>
