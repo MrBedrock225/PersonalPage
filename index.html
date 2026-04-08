@@ -3,215 +3,184 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carta VHS de Cumpleaños</title>
+  <title>Camila VHS Experience</title>
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      overflow: hidden;
       background: #000;
       color: #7CFFB2;
       font-family: "Courier New", monospace;
-      height: 100vh;
+      overflow: hidden;
     }
-
-    canvas { position: fixed; inset: 0; pointer-events: none; }
-
-    .tv-intro {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 20;
-      animation: tvBoot 2.4s ease forwards;
-      transform-origin: center;
-    }
-
-    @keyframes tvBoot {
-      0% { opacity: 1; transform: scaleY(0.005) scaleX(0); filter: brightness(4); }
-      35% { transform: scaleY(0.01) scaleX(1); }
-      70% { transform: scaleY(1) scaleX(1); }
-      100% { opacity: 0; visibility: hidden; }
-    }
-
     .screen {
-      position: relative;
       width: 100vw;
       height: 100vh;
       display: flex;
-      align-items: center;
       justify-content: center;
-      background:
-        radial-gradient(circle at center, rgba(30,255,120,0.06), transparent 60%),
-        linear-gradient(to bottom, rgba(255,255,255,0.03), rgba(0,0,0,0.1));
+      align-items: center;
+      background: radial-gradient(circle, rgba(0,255,120,0.08), #000 70%);
     }
-
-    .screen::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.04) 0 1px, transparent 2px 4px);
-      opacity: 0.35;
-      animation: scan 8s linear infinite;
-    }
-
-    .terminal {
-      width: min(920px, 88vw);
-      height: 540px;
-      padding: 28px;
-      border: 1px solid rgba(124,255,178,0.3);
-      background: rgba(0, 15, 5, 0.72);
-      box-shadow: 0 0 20px rgba(124,255,178,0.12), inset 0 0 40px rgba(124,255,178,0.04);
-      border-radius: 8px;
+    .panel {
+      width: min(800px, 90vw);
+      min-height: 500px;
+      background: rgba(0,20,0,0.8);
+      border: 1px solid rgba(124,255,178,0.35);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(124,255,178,0.15);
       position: relative;
-      overflow: hidden;
     }
-
-    .header { margin-bottom: 18px; opacity: 0.8; }
-
-    .viewport {
-      position: relative;
-      height: 430px;
-      overflow: hidden;
+    .hidden { display: none; }
+    button, input {
+      background: #001a08;
+      color: #7CFFB2;
+      border: 1px solid #7CFFB2;
+      padding: 12px;
+      font-family: inherit;
+      margin-top: 10px;
+      width: 100%;
     }
-
-    .message {
-      position: absolute;
-      inset: 0;
+    button:hover { cursor: pointer; filter: brightness(1.2); }
+    .type {
       white-space: pre-wrap;
       line-height: 1.8;
-      font-size: clamp(16px, 2vw, 22px);
-      text-shadow: 0 0 8px rgba(124,255,178,0.35);
-      opacity: 0;
-      transform: translateY(40px);
-      transition: transform 0.8s ease, opacity 0.8s ease;
+      min-height: 260px;
+      font-size: 20px;
     }
-
-    .message.show {
-      opacity: 1;
-      transform: translateY(0);
+    .tvboot {
+      position: fixed;
+      inset: 0;
+      background: #fff;
+      z-index: 999;
+      animation: boot 1.8s forwards;
+      transform-origin: center;
     }
-
-    .message.hide {
-      opacity: 0;
-      transform: translateY(-40px);
+    @keyframes boot {
+      0% { transform: scaleY(0.002) scaleX(0); opacity: 1; }
+      40% { transform: scaleY(0.01) scaleX(1); opacity: 1; }
+      70% { transform: scaleY(1) scaleX(1); opacity: 1; }
+      100% { opacity: 0; visibility: hidden; }
     }
-
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      height: 1.1em;
-      background: #7CFFB2;
-      animation: blink 1s steps(1) infinite;
-      box-shadow: 0 0 8px #7CFFB2;
-    }
-
-    @keyframes blink { 50% { opacity: 0; } }
-    @keyframes scan { from { transform: translateY(-10px); } to { transform: translateY(10px); } }
   </style>
 </head>
 <body>
-  <div class="tv-intro"></div>
-  <canvas id="noise"></canvas>
-  <canvas id="fx"></canvas>
-
+  <div class="tvboot"></div>
   <div class="screen">
-    <div class="terminal">
-      <div class="header">[ birthday_memories_vhs.exe ] reproduciendo...</div>
-      <div class="viewport">
-        <div id="msg" class="message"></div>
+    <div class="panel">
+      <div id="menu">
+        <h1>SYSTEM MENU</h1>
+        <button id="camilaBtn">Camila</button>
+      </div>
+
+      <div id="login" class="hidden">
+        <h2>LOGIN REQUIRED</h2>
+        <input id="username" placeholder="nombre" />
+        <input id="password" placeholder="clave" maxlength="5" />
+        <button id="loginBtn">Ingresar</button>
+        <p id="status"></p>
+      </div>
+
+      <div id="letter" class="hidden">
+        <div id="text" class="type"></div>
       </div>
     </div>
   </div>
 
-  <audio id="staticAudio" autoplay>
+  <audio autoplay>
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f5c9f8c8.mp3?filename=tv-static-109624.mp3" type="audio/mpeg">
   </audio>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    // REEMPLAZA ESTO CON TU CONFIG DE FIREBASE
+    const firebaseConfig = {
+      apiKey: 'TU_API_KEY',
+      authDomain: 'TU_PROJECT.firebaseapp.com',
+      projectId: 'TU_PROJECT_ID',
+      storageBucket: 'TU_PROJECT.appspot.com',
+      messagingSenderId: 'TU_ID',
+      appId: 'TU_APP_ID'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const VALID_USER = 'Camila';
+    const VALID_PASSWORDS = ['73194','48216','90527','16483','52891'];
+
+    const menu = document.getElementById('menu');
+    const login = document.getElementById('login');
+    const letter = document.getElementById('letter');
+    const status = document.getElementById('status');
+    const text = document.getElementById('text');
+
+    document.getElementById('camilaBtn').onclick = () => {
+      menu.classList.add('hidden');
+      login.classList.remove('hidden');
+    };
+
+    async function tryLogin() {
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
+
+      if (user !== VALID_USER || !VALID_PASSWORDS.includes(pass)) {
+        status.textContent = 'Credenciales inválidas';
+        return;
+      }
+
+      const ref = doc(db, 'single_use_keys', pass);
+      const snap = await getDoc(ref);
+
+      if (snap.exists() && snap.data().used) {
+        status.textContent = 'Esta clave ya fue usada en otro dispositivo';
+        return;
+      }
+
+      await setDoc(ref, {
+        used: true,
+        usedBy: user,
+        usedAt: new Date().toISOString()
+      });
+
+      login.classList.add('hidden');
+      letter.classList.remove('hidden');
+      playLetter();
+    }
+
+    document.getElementById('loginBtn').onclick = tryLogin;
+
     const pages = [
-`Hola... feliz cumpleaños.\n\nNo quería darte una carta normal.` ,
-`Quería que se sintiera como encontrar una cinta perdida.\nUna memoria vieja que aún sigue viva.` ,
-`Gracias por existir en esta línea temporal tan rota y aun así hacerla más bonita.` ,
-`Cada recuerdo contigo merece rebobinarse una y otra vez.\n\nCon cariño,\nNeo <3`
+      'Hola Camila...\n\nFeliz cumpleaños. Esto no es una carta normal.',
+      'Es una cinta perdida entre recuerdos, ruido y tiempo.',
+      'Cada memoria contigo merece rebobinarse una vez más.',
+      'Con cariño,\nNeo <3'
     ];
 
-    const msg = document.getElementById('msg');
-    let pageIndex = 0;
-
-    function typeText(text, cb) {
-      msg.innerHTML = '';
-      msg.className = 'message show';
+    let page = 0;
+    function typePage(content, cb) {
+      text.innerHTML = '';
       let i = 0;
       function step() {
-        if (i < text.length) {
-          msg.innerHTML += text[i] === '\n' ? '<br>' : text[i];
+        if (i < content.length) {
+          text.innerHTML += content[i] === '\n' ? '<br>' : content[i];
           i++;
-          setTimeout(step, 25 + Math.random() * 35);
+          setTimeout(step, 30);
         } else if (cb) {
-          setTimeout(cb, 2200);
+          setTimeout(cb, 2000);
         }
       }
       step();
     }
 
-    function nextPage() {
-      typeText(pages[pageIndex], () => {
-        msg.classList.remove('show');
-        msg.classList.add('hide');
-        setTimeout(() => {
-          pageIndex = (pageIndex + 1) % pages.length;
-          msg.classList.remove('hide');
-          typeText(pages[pageIndex], nextPage);
-        }, 900);
+    function playLetter() {
+      typePage(pages[page], () => {
+        page = (page + 1) % pages.length;
+        playLetter();
       });
     }
-
-    setTimeout(nextPage, 2200);
-
-    const noise = document.getElementById('noise');
-    const fx = document.getElementById('fx');
-    const nctx = noise.getContext('2d');
-    const fctx = fx.getContext('2d');
-
-    function resize() {
-      noise.width = fx.width = innerWidth;
-      noise.height = fx.height = innerHeight;
-    }
-    addEventListener('resize', resize);
-    resize();
-
-    function renderNoise() {
-      const img = nctx.createImageData(noise.width, noise.height);
-      const buffer = new Uint32Array(img.data.buffer);
-      for (let i = 0; i < buffer.length; i++) {
-        const shade = Math.random() * 40;
-        buffer[i] = (18 << 24) | (shade << 16) | (shade << 8) | shade;
-      }
-      nctx.putImageData(img, 0, 0);
-      requestAnimationFrame(renderNoise);
-    }
-    renderNoise();
-
-    const particles = Array.from({ length: 100 }, () => ({
-      x: Math.random() * innerWidth,
-      y: Math.random() * innerHeight,
-      r: Math.random() * 1.8,
-      s: Math.random() * 0.8 + 0.2,
-    }));
-
-    function animateFX() {
-      fctx.clearRect(0, 0, fx.width, fx.height);
-      for (const p of particles) {
-        p.y -= p.s;
-        if (p.y < -5) { p.y = innerHeight + 5; p.x = Math.random() * innerWidth; }
-        fctx.beginPath();
-        fctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        fctx.fillStyle = 'rgba(124,255,178,0.25)';
-        fctx.fill();
-      }
-      requestAnimationFrame(animateFX);
-    }
-    animateFX();
   </script>
 </body>
 </html>
