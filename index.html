@@ -1,225 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Camila VHS Experience</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      background: #000;
-      color: #7CFFB2;
-      font-family: "Courier New", monospace;
-      overflow: hidden;
-    }
-
-    .screen {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle, rgba(0,255,120,0.08), #000 70%);
-    }
-
-    .panel {
-      width: min(900px, 92vw);
-      min-height: 560px;
-      background: rgba(0,20,0,0.82);
-      border: 1px solid rgba(124,255,178,0.35);
-      padding: 30px;
-      border-radius: 18px;
-      box-shadow: 0 0 40px rgba(124,255,178,0.15), inset 0 0 30px rgba(124,255,178,0.05);
-      position: relative;
-      backdrop-filter: blur(2px);
-    }
-
-    .hidden { display: none; }
-
-    button, input {
-      width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      background: #001a08;
-      color: #7CFFB2;
-      border: 1px solid rgba(124,255,178,0.5);
-      border-radius: 10px;
-      font-family: inherit;
-      transition: all 0.25s ease;
-    }
-
-    button:hover {
-      cursor: pointer;
-      transform: translateY(-2px) scale(1.01);
-      box-shadow: 0 0 18px rgba(124,255,178,0.35);
-      filter: brightness(1.15);
-    }
-
-    button:active {
-      transform: scale(0.99);
-    }
-
-    .type {
-      white-space: pre-wrap;
-      line-height: 1.8;
-      min-height: 320px;
-      font-size: 20px;
-      animation: fadeUp 0.6s ease;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .tvboot {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      z-index: 9999;
-      pointer-events: none;
-      animation: tvOverlayOff 1.9s ease forwards;
-    }
-
-    .tvboot::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: #fff;
-      box-shadow: 0 0 30px #fff;
-      transform: translateY(-50%) scaleX(0);
-      animation: crtLine 1.2s ease forwards;
-    }
-
-    .tvboot::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: #fff;
-      opacity: 0;
-      animation: crtFlash 1.8s ease forwards;
-    }
-
-    @keyframes crtLine {
-      0% { transform: translateY(-50%) scaleX(0); }
-      40% { transform: translateY(-50%) scaleX(1); }
-      100% { transform: translateY(-50%) scaleX(1); opacity: 0; }
-    }
-
-    @keyframes crtFlash {
-      0% { opacity: 0; }
-      35% { opacity: 0.95; }
-      65% { opacity: 0.25; }
-      100% { opacity: 0; }
-    }
-
-    @keyframes tvOverlayOff {
-      0%, 85% { opacity: 1; visibility: visible; }
-      100% { opacity: 0; visibility: hidden; }
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Camila VHS</title>
+  <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-  <div class="tvboot"></div>
 
-  <div class="screen">
-    <div class="panel">
-      <section id="menu">
-        <h1>SYSTEM MENU</h1>
-        <p>Selecciona un perfil para acceder a la experiencia.</p>
-        <button id="camilaBtn">Camila</button>
-      </section>
+<div class="tv-frame">
 
-      <section id="login" class="hidden">
-        <h2>LOGIN REQUIRED</h2>
-        <input id="username" placeholder="Nombre" />
-        <input id="password" placeholder="Clave" maxlength="5" />
-        <button id="loginBtn">Ingresar</button>
-        <p id="status"></p>
-      </section>
-
-      <section id="letter" class="hidden">
-        <div id="text" class="type"></div>
-      </section>
+  <!-- LOGIN -->
+  <section id="login" class="view active">
+    <div class="login-box">
+      <h2>Acceso</h2>
+      <input id="user" placeholder="Nombre">
+      <input id="pass" placeholder="Clave" maxlength="5">
+      <button id="loginBtn">Entrar</button>
+      <p id="status"></p>
     </div>
-  </div>
+  </section>
 
-  <script>
-    const VALID_USER = 'Camila';
-    const VALID_PASSWORDS = ['73194','48216','90527','16483','52891'];
+  <!-- CHAT -->
+  <section id="chat" class="view hidden">
+    <div class="chat-box">
+      <div class="msg">Mensajes</div>
+      <div class="msg highlight" id="openMessage">🎂 Camila</div>
+    </div>
+  </section>
 
-    const pages = [
-'Hola Camila...\n\nFeliz cumpleaños. De verdad espero que hoy la estés pasando bien, aunque sea un poquito más especial que cualquier otro día.',
-'Después de todo, este es TU día. Uno de esos pocos en los que todo debería girar un poco más a tu alrededor sin que nadie tenga derecho a quejarse.',
-'No voy a hacer esto demasiado formal ni perfecto, porque eso no sería muy yo.\n\nPero sí quería tomarme un momento para decirte algo sincero.',
-'Aunque todavía no nos conocemos tanto, puedo decir que eres una buena persona. De esas que se notan sin necesidad de mucho tiempo.',
-'Y honestamente, me alegra haberte conocido. A veces uno se cruza con gente sin esperar mucho, y termina valiendo más de lo que pensaba.',
-'Ojalá este nuevo año te traiga cosas buenas, momentos que te hagan reír de verdad, y días que valgan la pena recordar después.',
-'Y aunque esto sea solo una “pantalla rara” con texto verde, la intención detrás es real.',
-'\nCon cariño,\nNeo'
-];
+  <!-- CARTA -->
+  <section id="letter" class="view hidden">
+    <div class="terminal">
+      <div id="text"></div>
 
-    let page = 0;
+      <div class="controls">
+        <button id="pause">Pausar</button>
+        <button id="resume">Reanudar</button>
+        <button id="rewind">Rebobinar</button>
+        <button id="exit">Salir</button>
+      </div>
+    </div>
+  </section>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const menu = document.getElementById('menu');
-      const login = document.getElementById('login');
-      const letter = document.getElementById('letter');
-      const status = document.getElementById('status');
-      const text = document.getElementById('text');
-      const camilaBtn = document.getElementById('camilaBtn');
-      const loginBtn = document.getElementById('loginBtn');
-      const username = document.getElementById('username');
-      const password = document.getElementById('password');
+</div>
 
-      camilaBtn.addEventListener('click', () => {
-        menu.classList.add('hidden');
-        login.classList.remove('hidden');
-      });
-
-      loginBtn.addEventListener('click', () => {
-        const user = username.value.trim();
-        const pass = password.value.trim();
-
-        if (user !== VALID_USER || !VALID_PASSWORDS.includes(pass)) {
-          status.textContent = 'Credenciales inválidas';
-          return;
-        }
-
-        login.classList.add('hidden');
-        letter.classList.remove('hidden');
-        playLetter(text);
-      });
-    });
-
-    function typePage(el, content, cb) {
-      el.innerHTML = '';
-      let i = 0;
-      function step() {
-        if (i < content.length) {
-          el.innerHTML += content[i] === '\n' ? '<br>' : content[i];
-          i++;
-          setTimeout(step, 28 + Math.random() * 22);
-        } else if (cb) {
-          setTimeout(cb, 2200);
-        }
-      }
-      step();
-    }
-
-    function playLetter(el) {
-      typePage(el, pages[page], () => {
-        page = (page + 1) % pages.length;
-        el.style.animation = 'none';
-        void el.offsetWidth;
-        el.style.animation = 'fadeUp 0.6s ease';
-        playLetter(el);
-      });
-    }
-  </script>
+<script src="scripts/app.js"></script>
 </body>
 </html>
