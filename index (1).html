@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Camila VHS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+
+  <div class="bg-noise"></div>
+  <div class="bg-grid"></div>
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+  <div class="crt-flicker"></div>
+
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="status-bar">
+    <span class="status-dot"></span>
+    <span id="clock">00:00:00</span>
+    <span class="status-label">SYS.ONLINE</span>
+    <span class="spacer"></span>
+    <span class="status-label rec-label">● REC</span>
+    <span class="status-label">CH.04</span>
+  </div>
+
+  <main class="screen">
+
+    <!-- LOGIN -->
+    <section id="login" class="panel active">
+      <div class="panel-inner">
+        <div class="logo-area">
+          <div class="logo-vhs">VHS</div>
+          <div class="logo-sub">ACCESS TERMINAL v2.4</div>
+          <div class="logo-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">// USUARIO</label>
+          <div class="input-wrap">
+            <span class="input-icon">›</span>
+            <input id="user" type="text" placeholder="introduce tu nombre" autocomplete="off" spellcheck="false"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="field-label">// CLAVE DE ACCESO</label>
+          <div class="input-wrap">
+            <span class="input-icon">›</span>
+            <input id="pass" type="password" placeholder="5 dígitos" maxlength="5" autocomplete="off"/>
+          </div>
+        </div>
+
+        <button id="loginBtn" class="btn-primary">
+          <span class="btn-text">INICIAR SESIÓN</span>
+          <span class="btn-arrow">→</span>
+        </button>
+
+        <p id="status" class="status-msg"></p>
+
+        <div class="panel-footer">SISTEMA SEGURO · ACCESO RESTRINGIDO</div>
+      </div>
+    </section>
+
+    <!-- CHAT -->
+    <section id="chat" class="panel hidden">
+      <div class="panel-inner">
+        <div class="chat-header">
+          <div class="chat-header-dot"></div>
+          <span>BANDEJA DE ENTRADA</span>
+          <span class="chat-count">1 mensaje</span>
+        </div>
+
+        <div class="chat-list">
+          <div class="chat-item" id="openMessage">
+            <div class="chat-avatar">🎂</div>
+            <div class="chat-info">
+              <div class="chat-from">Neo</div>
+              <div class="chat-preview">Para: Camila · Hoy · Prioritario</div>
+            </div>
+            <div class="chat-badge">NUEVO</div>
+          </div>
+        </div>
+
+        <div class="panel-footer">FIN DE MENSAJES</div>
+      </div>
+    </section>
+
+    <!-- CARTA -->
+    <section id="letter" class="panel hidden">
+      <div class="panel-inner">
+        <div class="tape-header">
+          <div class="tape-reel left">
+            <div class="reel-inner" id="reelLeft"></div>
+          </div>
+          <div class="tape-title">
+            <span class="tape-label">REPRODUCIENDO</span>
+            <span class="tape-name">CARTA_CAMILA.vhs</span>
+          </div>
+          <div class="tape-reel right">
+            <div class="reel-inner" id="reelRight"></div>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+          <div class="progress-dot" id="progressDot"></div>
+        </div>
+
+        <div id="text" class="letter-box">
+          <span class="cursor-blink">█</span>
+        </div>
+
+        <div class="controls">
+          <button class="ctrl-btn" id="pause" title="Pausar">
+            <svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="12" rx="1"/><rect x="9" y="2" width="5" height="12" rx="1"/></svg>
+            PAUSAR
+          </button>
+          <button class="ctrl-btn" id="resume" title="Reanudar">
+            <svg width="16" height="16" viewBox="0 0 16 16"><polygon points="2,1 15,8 2,15"/></svg>
+            PLAY
+          </button>
+          <button class="ctrl-btn accent" id="rewind" title="Rebobinar">
+            <svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,8 15,2 15,14"/><polygon points="1,8 8,2 8,14"/></svg>
+            REBOBINAR
+          </button>
+          <button class="ctrl-btn danger" id="exit" title="Salir">
+            <svg width="16" height="16" viewBox="0 0 16 16"><line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" stroke-width="2"/><line x1="14" y1="2" x2="2" y2="14" stroke="currentColor" stroke-width="2"/></svg>
+            SALIR
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="scripts/app.js"></script>
+</body>
+</html>
