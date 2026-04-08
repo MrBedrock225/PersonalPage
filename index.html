@@ -51,13 +51,42 @@
     .tvboot {
       position: fixed;
       inset: 0;
-      background: #fff;
-      z-index: 999;
-      animation: boot 1.8s forwards;
-      transform-origin: center;
+      background: #000;
+      z-index: 9999;
+      overflow: hidden;
+      pointer-events: none;
     }
-    @keyframes boot {
-      0% { transform: scaleY(0.002) scaleX(0); opacity: 1; }
+    .tvboot::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #fff;
+      box-shadow: 0 0 30px #fff;
+      transform: translateY(-50%) scaleX(0);
+      animation: crtLine 1.2s ease forwards;
+    }
+    .tvboot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      animation: crtFlash 1.8s ease forwards;
+    }
+    @keyframes crtLine {
+      0% { transform: translateY(-50%) scaleX(0); }
+      40% { transform: translateY(-50%) scaleX(1); }
+      100% { transform: translateY(-50%) scaleX(1); opacity: 0; }
+    }
+    @keyframes crtFlash {
+      0% { opacity: 0; }
+      35% { opacity: 0.95; }
+      65% { opacity: 0.25; }
+      100% { opacity: 0; visibility: hidden; }
+    }
       40% { transform: scaleY(0.01) scaleX(1); opacity: 1; }
       70% { transform: scaleY(1) scaleX(1); opacity: 1; }
       100% { opacity: 0; visibility: hidden; }
@@ -91,23 +120,7 @@
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f5c9f8c8.mp3?filename=tv-static-109624.mp3" type="audio/mpeg">
   </audio>
 
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getFirestore, doc, getDoc, updateDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-    // REEMPLAZA ESTO CON TU CONFIG DE FIREBASE
-    const firebaseConfig = {
-      apiKey: 'TU_API_KEY',
-      authDomain: 'TU_PROJECT.firebaseapp.com',
-      projectId: 'TU_PROJECT_ID',
-      storageBucket: 'TU_PROJECT.appspot.com',
-      messagingSenderId: 'TU_ID',
-      appId: 'TU_APP_ID'
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
+  <script>
     const VALID_USER = 'Camila';
     const VALID_PASSWORDS = ['73194','48216','90527','16483','52891'];
 
@@ -122,7 +135,7 @@
       login.classList.remove('hidden');
     };
 
-    async function tryLogin() {
+    function tryLogin() {
       const user = document.getElementById('username').value.trim();
       const pass = document.getElementById('password').value.trim();
 
@@ -130,20 +143,6 @@
         status.textContent = 'Credenciales inválidas';
         return;
       }
-
-      const ref = doc(db, 'single_use_keys', pass);
-      const snap = await getDoc(ref);
-
-      if (snap.exists() && snap.data().used) {
-        status.textContent = 'Esta clave ya fue usada en otro dispositivo';
-        return;
-      }
-
-      await setDoc(ref, {
-        used: true,
-        usedBy: user,
-        usedAt: new Date().toISOString()
-      });
 
       login.classList.add('hidden');
       letter.classList.remove('hidden');
@@ -153,10 +152,13 @@
     document.getElementById('loginBtn').onclick = tryLogin;
 
     const pages = [
-      'Hola Camila...\n\nFeliz cumpleaños. Esto no es una carta normal.',
+      'Hola Camila...
+
+Feliz cumpleaños. Esto no es una carta normal.',
       'Es una cinta perdida entre recuerdos, ruido y tiempo.',
       'Cada memoria contigo merece rebobinarse una vez más.',
-      'Con cariño,\nNeo <3'
+      'Con cariño,
+Neo <3'
     ];
 
     let page = 0;
@@ -165,11 +167,12 @@
       let i = 0;
       function step() {
         if (i < content.length) {
-          text.innerHTML += content[i] === '\n' ? '<br>' : content[i];
+          text.innerHTML += content[i] === '
+' ? '<br>' : content[i];
           i++;
-          setTimeout(step, 30);
+          setTimeout(step, 30 + Math.random() * 20);
         } else if (cb) {
-          setTimeout(cb, 2000);
+          setTimeout(cb, 2200);
         }
       }
       step();
