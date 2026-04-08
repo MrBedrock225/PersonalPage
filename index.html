@@ -49,6 +49,7 @@
       font-size: 20px;
     }
     .tvboot {
+      animation: tvOverlayOff 1.9s ease forwards;
       position: fixed;
       inset: 0;
       background: #000;
@@ -83,6 +84,14 @@
     }
     @keyframes crtFlash {
       0% { opacity: 0; }
+      35% { opacity: 0.95; }
+      65% { opacity: 0.25; }
+      100% { opacity: 0; }
+    }
+    @keyframes tvOverlayOff {
+      0%, 85% { opacity: 1; visibility: visible; }
+      100% { opacity: 0; visibility: hidden; }
+    }
       35% { opacity: 0.95; }
       65% { opacity: 0.25; }
       100% { opacity: 0; visibility: hidden; }
