@@ -33,6 +33,7 @@
     }
     .hidden { display: none; }
     button, input {
+      transition: all 0.25s ease;
       background: #001a08;
       color: #7CFFB2;
       border: 1px solid #7CFFB2;
@@ -41,7 +42,15 @@
       margin-top: 10px;
       width: 100%;
     }
-    button:hover { cursor: pointer; filter: brightness(1.2); }
+    button:hover {
+      cursor: pointer;
+      filter: brightness(1.2);
+      box-shadow: 0 0 18px rgba(124,255,178,0.35);
+      transform: translateY(-2px) scale(1.01);
+    }
+    button:active {
+      transform: translateY(0) scale(0.99);
+    }
     .type {
       white-space: pre-wrap;
       line-height: 1.8;
@@ -139,7 +148,11 @@
     const status = document.getElementById('status');
     const text = document.getElementById('text');
 
-    document.getElementById('camilaBtn').onclick = () => {
+    document.addEventListener('DOMContentLoaded', () => {
+      const camilaBtn = document.getElementById('camilaBtn');
+      const loginBtn = document.getElementById('loginBtn');
+
+      camilaBtn.addEventListener('click', () => {
       menu.classList.add('hidden');
       login.classList.remove('hidden');
     };
@@ -158,7 +171,9 @@
       playLetter();
     }
 
-    document.getElementById('loginBtn').onclick = tryLogin;
+          });
+      loginBtn.addEventListener('click', tryLogin);
+    });
 
     const pages = [
       'Hola Camila...
