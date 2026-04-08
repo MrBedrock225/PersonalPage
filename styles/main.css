@@ -1,107 +1,115 @@
+* { box-sizing: border-box; }
+
 body {
   margin: 0;
-  background: black;
-  color: #7CFFB2;
-  font-family: monospace;
   overflow: hidden;
+  background: #000;
+  color: #7CFFB2;
+  font-family: "Courier New", monospace;
 }
 
-/* CRT frame */
-.tv-frame {
+.screen {
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-
-  filter: contrast(1.2) brightness(1.1);
+  background: radial-gradient(circle, rgba(0,255,120,0.08), #000 70%);
 }
 
-/* ojo de pez */
-.tv-frame::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, transparent 60%, black 100%);
-  pointer-events: none;
-}
-
-/* scanlines */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.05) 0px,
-    transparent 2px
-  );
-  pointer-events: none;
-}
-
-/* vistas */
-.view {
-  position: absolute;
-  width: 90vw;
-  max-width: 700px;
+.panel {
+  width: min(900px, 92vw);
+  min-height: 560px;
+  background: rgba(0,20,0,0.82);
+  border: 1px solid rgba(124,255,178,0.35);
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow:
+    0 0 40px rgba(124,255,178,0.15),
+    inset 0 0 30px rgba(124,255,178,0.05);
+  backdrop-filter: blur(2px);
 }
 
 .hidden { display: none; }
 .active { display: block; }
 
-/* cajas */
-.login-box, .chat-box, .terminal {
-  background: rgba(0,20,0,0.85);
-  padding: 20px;
-  border-radius: 14px;
-  border: 1px solid #7CFFB2;
-  box-shadow: 0 0 25px rgba(124,255,178,0.3);
-}
-
-/* botones */
-button {
-  margin-top: 10px;
-  padding: 10px;
-  background: black;
-  border: 1px solid #7CFFB2;
+input, button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  background: #001a08;
   color: #7CFFB2;
-  cursor: pointer;
-  transition: 0.25s;
+  border: 1px solid rgba(124,255,178,0.5);
+  border-radius: 10px;
+  font-family: inherit;
+  transition: all 0.25s ease;
 }
 
-button:hover {
+button:hover,
+.chat-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 12px #7CFFB2;
-}
-
-button:active {
-  transform: scale(0.95);
-}
-
-/* chat */
-.msg {
-  padding: 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.highlight {
-  background: rgba(124,255,178,0.2);
+  box-shadow: 0 0 18px rgba(124,255,178,0.35);
+  filter: brightness(1.15);
   cursor: pointer;
 }
 
-/* texto */
-#text {
-  min-height: 260px;
+.chat-header {
+  font-size: 28px;
+  margin-bottom: 20px;
 }
 
-/* movimiento leve letras */
-@keyframes floatText {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(0.5px,-0.5px); }
-  100% { transform: translate(0,0); }
+.chat-item {
+  padding: 18px;
+  border: 1px solid rgba(124,255,178,0.25);
+  border-radius: 12px;
+  background: rgba(124,255,178,0.08);
 }
 
+.letter-box {
+  min-height: 320px;
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 20px;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.controls button {
+  flex: 1;
+}
+
+/* VHS lines */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.04) 0px,
+    transparent 2px,
+    transparent 4px
+  );
+}
+
+/* Glow */
+.screen-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at center, rgba(124,255,178,0.08), transparent 60%);
+}
+
+/* subtle text movement */
 #text span {
   display: inline-block;
-  animation: floatText 2s infinite ease-in-out;
+  animation: drift 2s infinite ease-in-out;
+}
+
+@keyframes drift {
+  0%,100% { transform: translate(0,0); }
+  50% { transform: translate(0.5px,-0.5px); }
 }
